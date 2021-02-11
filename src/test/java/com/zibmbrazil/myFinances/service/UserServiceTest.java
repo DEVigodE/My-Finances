@@ -41,24 +41,40 @@ public class UserServiceTest {
 
 	@Test
 	public void mustSaveAUser() {
-		//org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> {
-			// SCENARIO
-			Mockito.doNothing().when(service).validateEmail(Mockito.anyString());
-			User user = User.builder().id(1l).name("Tester").email("tester@gmail.com").password("password").build();
+		// org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> {
+		// SCENARIO
+		Mockito.doNothing().when(service).validateEmail(Mockito.anyString());
+		User user = User.builder().id(1l).name("Tester").email("tester@gmail.com").password("password").build();
 
-			Mockito.when(repository.save(Mockito.any(User.class))).thenReturn(user);
+		Mockito.when(repository.save(Mockito.any(User.class))).thenReturn(user);
+
+		// ACTION
+		User userSaved = service.saveUser(new User());
+
+		// VERIFY
+		Assertions.assertThat(userSaved).isNotNull();
+		Assertions.assertThat(userSaved.getId()).isEqualTo(1l);
+		Assertions.assertThat(userSaved.getName()).isEqualTo("Tester");
+		Assertions.assertThat(userSaved.getEmail()).isEqualTo("tester@gmail.com");
+		Assertions.assertThat(userSaved.getPassword()).isEqualTo("password");
+
+	}
+
+	@Test
+	public void mustNotSaveUserWithEmailAlreadyRegistered() {
+		org.junit.jupiter.api.Assertions.assertThrows(BusinessRuleException.class, () -> {
+			// SCENARIO
+			String email = "tester@gmail.com";
+			User user = User.builder().email(email).build();
+			Mockito.doThrow(BusinessRuleException.class).when(service).validateEmail(email);
 
 			// ACTION
-			User userSaved = service.saveUser(new User());
+			service.saveUser(user);
 
 			// VERIFY
-			Assertions.assertThat(userSaved).isNotNull();
-			Assertions.assertThat(userSaved.getId()).isEqualTo(1l);
-			Assertions.assertThat(userSaved.getName()).isEqualTo("Tester");
-			Assertions.assertThat(userSaved.getEmail()).isEqualTo("tester@gmail.com");
-			Assertions.assertThat(userSaved.getPassword()).isEqualTo("password");
-			
-		}
+			Mockito.verify(repository, Mockito.never()).save(user);
+		});
+	}
 
 	@Test
 	public void mustAuthenticateAUserSuccessfully() {
