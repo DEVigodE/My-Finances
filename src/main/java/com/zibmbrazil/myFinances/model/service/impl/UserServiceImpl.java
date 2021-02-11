@@ -1,6 +1,7 @@
 package com.zibmbrazil.myFinances.model.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
 
 import com.zibmbrazil.myFinances.exception.BusinessRuleException;
@@ -23,8 +24,10 @@ public class UserServiceImpl implements UserService {
 		return null;
 	}
 
+	@Transactional
 	public User saveUser(User user) {
-		return null;
+		validateEmail(user.getEmail());
+		return repository.save(user);
 	}
 
 	public void validateEmail(String email) {
