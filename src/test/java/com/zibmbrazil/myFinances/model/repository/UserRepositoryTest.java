@@ -81,7 +81,7 @@ public class UserRepositoryTest {
 	public void mustReturnEmptyWhenSearchingForUserByEmailWhenItDoesNotExistInTheDatabase() {
 
 		// VERIFY
-		Optional<User> result = repository.findByEmail("igor@email.com");
+		Optional<User> result = repository.findByEmail("tester@gmail.com");
 
 		Assertions.assertThat(result.isPresent()).isFalse();
 	}
