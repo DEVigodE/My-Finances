@@ -1,9 +1,12 @@
 package com.zibmbrazil.myFinances.model.service.impl;
 
+import java.util.Optional;
+
 import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
+import com.zibmbrazil.myFinances.exception.AuthenticationError;
 import com.zibmbrazil.myFinances.exception.BusinessRuleException;
 import com.zibmbrazil.myFinances.model.entity.User;
 import com.zibmbrazil.myFinances.model.repository.UserRepository;
@@ -20,8 +23,14 @@ public class UserServiceImpl implements UserService {
 	}
 
 	public User authenticate(String email, String password) {
-		// TODO Auto-generated method stub
-		return null;
+		Optional<User> _user = repository.findByEmail(email);
+		if (!_user.isPresent())
+			throw new AuthenticationError("User not found for the given email");
+
+		if (!_user.get().getPassword().equals(password))
+			throw new AuthenticationError("Invalid password");
+
+		return _user.get();
 	}
 
 	@Transactional
