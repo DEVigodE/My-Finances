@@ -23,7 +23,7 @@ import com.zibmbrazil.myFinances.model.enums.TypeRelease;
 
 @Entity
 @Table(name = "releases", schema = "finances")
-public class Releases {
+public class Release {
 
 	@Id
 	@Column(name = "id")
@@ -208,7 +208,7 @@ public class Releases {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Releases other = (Releases) obj;
+		Release other = (Release) obj;
 		if (dateRegister == null) {
 			if (other.dateRegister != null)
 				return false;
