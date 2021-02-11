@@ -1,5 +1,7 @@
 package com.zibmbrazil.myFinances.model.repository;
 
+import java.util.Optional;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +24,7 @@ public class UserRepositoryTest {
 
 	@Autowired
 	UserRepository repository;
-	
+
 	@Autowired
 	TestEntityManager entityManager;
 
@@ -30,7 +32,7 @@ public class UserRepositoryTest {
 	public void shouldCheckForAnEmail() {
 
 		// SCENARIO
-		User user = User.builder().name("Igor").email("igor@email.com").build();
+		User user = createUser();
 		entityManager.persist(user);
 
 		// ACTION / EXECUTE
@@ -43,13 +45,50 @@ public class UserRepositoryTest {
 	@Test
 	public void iMustReturnFalseWhenThereIsNoUserRegisteredWithTheEmail() {
 
-
 		// ACTION / EXECUTE
 		boolean result = repository.existsByEmail("igor@email.com");
-		
 
 		// VERIFY
 		Assertions.assertThat(result).isFalse();
+	}
+
+	@Test
+	public void aUserMustPersistInTheDatabase() {
+		// SCENARIO
+		User user = createUser();
+
+		// ACTION / EXECUTE
+		User userSaved = repository.save(user);
+
+		// VERIFY
+		Assertions.assertThat(userSaved.getId()).isNotNull();
+
+	}
+
+	@Test
+	public void mustSearchForAUserByEmail() {
+		// SCENARIO
+		User user = createUser();
+		entityManager.persist(user);
+
+		// VERIFY
+		Optional<User> result = repository.findByEmail(user.getEmail());
+
+		Assertions.assertThat(result.isPresent()).isTrue();
+	}
+	
+	@Test
+	public void mustReturnEmptyWhenSearchingForUserByEmailWhenItDoesNotExistInTheDatabase() {
+
+		// VERIFY
+		Optional<User> result = repository.findByEmail("igor@email.com");
+
+		Assertions.assertThat(result.isPresent()).isFalse();
+	}
+
+	public static User createUser() {
+
+		return User.builder().name("Igor").email("igor@email.com").password("senha").build();
 	}
 
 }
