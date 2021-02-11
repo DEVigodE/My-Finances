@@ -27,11 +27,20 @@ public class UserRepositoryTest {
 		// ACTION / EXECUTE
 		boolean result = repository.existsByEmail("igor@email.com");
 
-		System.out.println(result);
-
 		// VERIFY
 		Assertions.assertThat(result).isTrue();
+	}
 
+	@Test
+	public void iMustReturnFalseWhenThereIsNoUserRegisteredWithTheEmail() {
+		repository.deleteAll();
+
+		// ACTION / EXECUTE
+		boolean result = repository.existsByEmail("igor@email.com");
+		
+
+		// VERIFY
+		Assertions.assertThat(result).isFalse();
 	}
 
 }
