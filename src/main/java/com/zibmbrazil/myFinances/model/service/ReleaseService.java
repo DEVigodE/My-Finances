@@ -16,5 +16,7 @@ public interface ReleaseService {
 	List<Release> search(Release releaseFilter);
 
 	void updateStatus(Release release, Status status);
+	
+	void validate(Release release);
 
 }

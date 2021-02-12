@@ -1,168 +1,92 @@
 package com.zibmbrazil.myFinances.model.service.impl;
 
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.ExampleMatcher.StringMatcher;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.zibmbrazil.myFinances.exception.BusinessRuleException;
 import com.zibmbrazil.myFinances.model.entity.Release;
+import com.zibmbrazil.myFinances.model.enums.Status;
 import com.zibmbrazil.myFinances.model.repository.ReleaseRepository;
+import com.zibmbrazil.myFinances.model.service.ReleaseService;
 
-@Service
-public class ReleaseServiceImpl implements ReleaseRepository {
-	
+public class ReleaseServiceImpl implements ReleaseService {
+
 	private ReleaseRepository repository;
-	
+
 	public ReleaseServiceImpl(ReleaseRepository _repository) {
 		this.repository = _repository;
 	}
 
 	@Override
-	public List<Release> findAll() {
-		// TODO Auto-generated method stub
-		return null;
+	@Transactional
+	public Release save(Release release) {
+		validate(release);
+		release.setStatus(Status.PENDING);
+		return repository.save(release);
 	}
 
 	@Override
-	public List<Release> findAll(Sort sort) {
-		// TODO Auto-generated method stub
-		return null;
+	@Transactional
+	public Release update(Release release) {
+		Objects.requireNonNull(release.getId());
+		validate(release);
+		return repository.save(release);
 	}
 
 	@Override
-	public List<Release> findAllById(Iterable<Long> ids) {
-		// TODO Auto-generated method stub
-		return null;
+	@Transactional
+	public void delete(Release release) {
+		Objects.requireNonNull(release.getId());
+		repository.delete(release);
 	}
 
 	@Override
-	public <S extends Release> List<S> saveAll(Iterable<S> entities) {
-		// TODO Auto-generated method stub
-		return null;
+	@Transactional(readOnly = true)
+	public List<Release> search(Release releaseFilter) {
+
+		Example example = Example.of(releaseFilter,
+				ExampleMatcher.matching().withIgnoreCase().withStringMatcher(StringMatcher.CONTAINING));
+
+		return repository.findAll(example);
 	}
 
 	@Override
-	public void flush() {
-		// TODO Auto-generated method stub
-		
+	public void updateStatus(Release release, Status status) {
+		release.setStatus(status);
+		repository.save(release);
 	}
 
 	@Override
-	public <S extends Release> S saveAndFlush(S entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public void validate(Release release) {
+		if (release.getDescription() == null || release.getDescription().trim().equals("")) {
+			throw new BusinessRuleException("Enter a valid description.");
+		}
 
-	@Override
-	public void deleteInBatch(Iterable<Release> entities) {
-		// TODO Auto-generated method stub
-		
-	}
+		if (release.getMonth() == null || release.getMonth() < 1 || release.getMonth() > 12) {
+			throw new BusinessRuleException("Invalid Month.");
+		}
 
-	@Override
-	public void deleteAllInBatch() {
-		// TODO Auto-generated method stub
-		
-	}
+		if (release.getYear() == null || release.getYear().toString().length() != 4) {
+			throw new BusinessRuleException("Invalid Year.");
+		}
 
-	@Override
-	public Release getOne(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		if (release.getUser() == null || release.getUser().getId() == null) {
+			throw new BusinessRuleException("Invalid User.");
+		}
 
-	@Override
-	public <S extends Release> List<S> findAll(Example<S> example) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		if (release.getValue() == null || release.getValue().compareTo(BigDecimal.ZERO) < 1) {
+			throw new BusinessRuleException("Invalid Value.");
+		}
 
-	@Override
-	public <S extends Release> List<S> findAll(Example<S> example, Sort sort) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Page<Release> findAll(Pageable pageable) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Release> S save(S entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Optional<Release> findById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean existsById(Long id) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public long count() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public void deleteById(Long id) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void delete(Release entity) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void deleteAll(Iterable<? extends Release> entities) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void deleteAll() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public <S extends Release> Optional<S> findOne(Example<S> example) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Release> Page<S> findAll(Example<S> example, Pageable pageable) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Release> long count(Example<S> example) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public <S extends Release> boolean exists(Example<S> example) {
-		// TODO Auto-generated method stub
-		return false;
+		if (release.getType() == null) {
+			throw new BusinessRuleException("Invalid Type.");
+		}
 	}
 
 }
