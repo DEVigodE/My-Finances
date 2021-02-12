@@ -4,6 +4,6 @@ public enum Status {
 
 	PENDING, 
 	CANCELED, 
-	EFFECTIVED
+	EFFECTED
 
 }

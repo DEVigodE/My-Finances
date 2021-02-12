@@ -3,18 +3,22 @@ package com.zibmbrazil.myFinances.model.service.impl;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.ExampleMatcher.StringMatcher;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.zibmbrazil.myFinances.exception.BusinessRuleException;
 import com.zibmbrazil.myFinances.model.entity.Release;
 import com.zibmbrazil.myFinances.model.enums.Status;
+import com.zibmbrazil.myFinances.model.enums.TypeRelease;
 import com.zibmbrazil.myFinances.model.repository.ReleaseRepository;
 import com.zibmbrazil.myFinances.model.service.ReleaseService;
 
+@Service
 public class ReleaseServiceImpl implements ReleaseService {
 
 	private ReleaseRepository repository;
@@ -50,7 +54,7 @@ public class ReleaseServiceImpl implements ReleaseService {
 	@Transactional(readOnly = true)
 	public List<Release> search(Release releaseFilter) {
 
-		Example example = Example.of(releaseFilter,
+		Example<Release> example = Example.of(releaseFilter,
 				ExampleMatcher.matching().withIgnoreCase().withStringMatcher(StringMatcher.CONTAINING));
 
 		return repository.findAll(example);
@@ -87,6 +91,25 @@ public class ReleaseServiceImpl implements ReleaseService {
 		if (release.getType() == null) {
 			throw new BusinessRuleException("Invalid Type.");
 		}
+	}
+
+	@Override
+	public Optional<Release> findById(Long id) {
+		return repository.findById(id);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public BigDecimal getBalancebyIdUser(Long id) {
+		BigDecimal recipes = repository.getBalanceByTypeReleaseAndUser(id, TypeRelease.RECIPE, Status.EFFECTED);
+		BigDecimal expense = repository.getBalanceByTypeReleaseAndUser(id, TypeRelease.EXPENSE, Status.EFFECTED);
+		if (recipes == null)
+			recipes = BigDecimal.ZERO;
+		if (expense == null)
+			expense = BigDecimal.ZERO;
+
+		return recipes.subtract(expense);
+
 	}
 
 }
