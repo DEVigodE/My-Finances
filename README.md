@@ -15,7 +15,7 @@ What's in the project
 Languages
   - Java (Spring Boot)
   - SQL (Postgresql)
-  - HTML, CSS and Javascript (React)
+  - HTML, CSS and Javascript (React) ***DEVelopment queue***
 
 
 PT-BR
@@ -33,4 +33,4 @@ O que tem no projeto
 Linguagens
   - Java (Spring Boot)
   - SQL (Postgresql)
-  - HTML, CSS e Javascript (React)
+  - HTML, CSS e Javascript (React) ***Na fila de Desenvolvimento**
