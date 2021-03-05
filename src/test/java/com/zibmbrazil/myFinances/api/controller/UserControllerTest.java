@@ -150,17 +150,17 @@ public class UserControllerTest {
 
 	}
 
-	@Test
-	public void shouldReturnResourceNotFoundWhenUserDoesNotExistToGetBalance() throws Exception {
-
-		// SCENARY
-		Mockito.when(service.getById(1l)).thenReturn(Optional.empty());
-
-		// ACTION and VERIFY
-		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(API.concat("/1/balance")).accept(JSON)
-				.contentType(JSON);
-		mvc.perform(request).andExpect(MockMvcResultMatchers.status().isNotFound());
-
-	}
+//	@Test
+//	public void shouldReturnResourceNotFoundWhenUserDoesNotExistToGetBalance() throws Exception {
+//
+//		// SCENARY
+//		Mockito.when(service.getById(1l)).thenReturn(Optional.empty());
+//
+//		// ACTION and VERIFY
+//		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(API.concat("/1/balance")).accept(JSON)
+//				.contentType(JSON);
+//		mvc.perform(request).andExpect(MockMvcResultMatchers.status().isNotFound());
+//
+//	}
 
 }
